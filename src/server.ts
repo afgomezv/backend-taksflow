@@ -1,31 +1,16 @@
 import express from "express";
 import "dotenv/config.js";
 import { connectDB } from "./config/db";
+import projectRoutes from "./routes/ProjectRoutes";
 
 // Connect to MongoDB database
 connectDB();
 
 const server = express();
 
+server.use(express.json());
+
 // Define routes
-server.get("/", (req, res) => {
-  res.send("Desde GET");
-});
-
-server.post("/", (req, res) => {
-  res.send("Desde POST");
-});
-
-server.put("/", (req, res) => {
-  res.send("Desde PUT");
-});
-
-server.patch("/", (req, res) => {
-  res.send("Desde PATCH");
-});
-
-server.delete("/", (req, res) => {
-  res.send("Desde DELETE");
-});
+server.use("/api/projects", projectRoutes);
 
 export default server;
