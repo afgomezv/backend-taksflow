@@ -1,13 +1,24 @@
 import { Router } from "express";
 import { ProjectController } from "../controllers/ProjectController";
-import { validateProjectInput } from "../middleware/ValidateProjectInput";
 import { handleInputErrors } from "../middleware/handleInputErrors";
-import { validateId } from "../middleware/validateId";
+import { validateProjectId, validateTaskId } from "../middleware/validateId";
+import { validateProjectInput } from "../middleware/validateProjectInput";
+import { TaskController } from "../controllers/TaskController";
+import { projectExists } from "../middleware/project";
+import { validateTaskInput } from "../middleware/validateTaskInput";
+import { validateTaskStatus } from "../middleware/validateTaskStatus";
+import { taskBelongsToProject, taskExists } from "../middleware/task";
 
 const router = Router();
 
-router.param("id", validateId);
+router.param("projectId", validateProjectId);
+router.param("projectId", projectExists);
 
+router.param("taskId", validateTaskId);
+router.param("taskId", taskExists);
+router.param("taskId", taskBelongsToProject);
+
+/**Routes for project **/
 router.post(
   "/",
   validateProjectInput,
@@ -15,16 +26,36 @@ router.post(
   ProjectController.createProject
 );
 router.get("/", ProjectController.getAllProjects);
-
-router.get("/:id", ProjectController.getProjectById);
-
+router.get("/:projectId", ProjectController.getProjectById);
 router.put(
-  "/:id",
+  "/:projectId",
   validateProjectInput,
   handleInputErrors,
   ProjectController.updateProject
 );
+router.delete("/:projectId", ProjectController.deleteProject);
 
-router.delete("/:id", ProjectController.deleteProject);
+/**Routes for task **/
+router.post(
+  "/:projectId/tasks",
+  validateTaskInput,
+  handleInputErrors,
+  TaskController.createTask
+);
+router.get("/:projectId/tasks", TaskController.getProjectTasks);
+router.get("/:projectId/tasks/:taskId", TaskController.getTaskById);
+router.put(
+  "/:projectId/tasks/:taskId",
+  validateTaskInput,
+  handleInputErrors,
+  TaskController.updateTask
+);
+router.delete("/:projectId/tasks/:taskId", TaskController.deleteTask);
+router.post(
+  "/:projectId/tasks/:taskId/status",
+  validateTaskStatus,
+  handleInputErrors,
+  TaskController.updateTaskStatus
+);
 
 export default router;
