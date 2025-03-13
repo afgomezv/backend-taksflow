@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import morgan from "morgan";
 import "dotenv/config.js";
 import { connectDB } from "./config/db";
 import projectRoutes from "./routes/ProjectRoutes";
@@ -11,6 +12,8 @@ connectDB();
 const server = express();
 
 server.use(cors(corsConfig));
+
+server.use(morgan("dev"));
 
 server.use(express.json());
 
