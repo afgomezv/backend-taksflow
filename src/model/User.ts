@@ -14,5 +14,5 @@ const UserSchema: Schema = new Schema({
   confirmed: { type: Boolean, default: false },
 });
 
-const User = mongoose.model("User", UserSchema);
+const User = mongoose.model<IUser>("User", UserSchema);
 export default User;
