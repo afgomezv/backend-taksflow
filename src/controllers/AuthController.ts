@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import User from "../model/User";
 import Token from "../model/Token";
-import { hashPassoword } from "../utils/auth";
+import { checkPassword, hashPassoword } from "../utils/auth";
 import { generateToken } from "../utils/token";
 import { AuthEmail } from "../emails/AuthEmail";
 
@@ -71,6 +71,50 @@ export class AuthController {
     } catch (error) {
       //console.error(error);
       res.status(500).json({ error: "Error al confirmar la cuenta" });
+    }
+  };
+
+  static login = async (req: Request, res: Response) => {
+    try {
+      const { email, password } = req.body;
+      const user = await User.findOne({ email });
+      if (!user) {
+        const error = new Error("Usuario no encontrado.");
+        res.status(404).json({ error: error.message });
+        return;
+      }
+
+      if (!user.confirmed) {
+        const token = new Token();
+        token.token = generateToken();
+        token.user = user.id;
+        await token.save();
+
+        AuthEmail.sendConfirmationEmail({
+          name: user.name,
+          email: user.email,
+          token: token.token,
+        });
+
+        const error = new Error(
+          "Debes confirmar tu cuenta primero. Se ha enviado correo electrónico de confirmación"
+        );
+        res.status(403).json({ error: error.message });
+        return;
+      }
+
+      const isPasswordCorrect = await checkPassword(password, user.password);
+
+      if (!isPasswordCorrect) {
+        const error = new Error("Contraseña incorrecta.");
+        res.status(401).json({ error: error.message });
+        return;
+      }
+
+      res.status(200).send("Autenticado.....");
+    } catch (error) {
+      //console.error(error);
+      res.status(500).json({ error: "Error al iniciar sesión" });
     }
   };
 }
