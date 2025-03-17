@@ -160,4 +160,85 @@ export class AuthController {
       res.status(500).json({ error: "Error al crear la cuenta" });
     }
   };
+
+  static forgotPassword = async (req: Request, res: Response) => {
+    try {
+      const { email } = req.body;
+
+      // check if user already exists
+      const user = await User.findOne({ email });
+      if (!user) {
+        const error = new Error(`El usuario no esta registrado.`);
+        res.status(409).json({ error: error.message });
+        return;
+      }
+
+      //Generate token
+      const token = new Token();
+      token.token = generateToken();
+      token.user = user.id;
+
+      await token.save();
+
+      //send email
+      AuthEmail.sendPasswordResetToken({
+        name: user.name,
+        email: user.email,
+        token: token.token,
+      });
+
+      res.status(201).json({
+        message: "Se ha enviado un nuevo token a tu correo electrónico",
+      });
+    } catch (error) {
+      //console.error(error);
+      res.status(500).json({ error: "Error al crear la cuenta" });
+    }
+  };
+
+  static validateToken = async (req: Request, res: Response) => {
+    try {
+      const { token } = req.body;
+      const tokenExists = await Token.findOne({ token });
+
+      if (!tokenExists) {
+        const error = new Error("Token no válido.");
+        res.status(401).json({ error: error.message });
+        return;
+      }
+
+      res.status(200).json({
+        message: "Token es válido. Ya puedes definir tu nueva contraseña",
+      });
+    } catch (error) {
+      //console.error(error);
+      res.status(500).json({ error: "Error al confirmar la cuenta" });
+    }
+  };
+
+  static updatePasswordWithToken = async (req: Request, res: Response) => {
+    try {
+      const { token } = req.params;
+      const { password } = req.body;
+      const tokenExists = await Token.findOne({ token });
+
+      if (!tokenExists) {
+        const error = new Error("Token no válido.");
+        res.status(401).json({ error: error.message });
+        return;
+      }
+
+      const user = await User.findById(tokenExists.user);
+      user.password = await hashPassoword(password);
+
+      await Promise.allSettled([user.save(), tokenExists.deleteOne()]);
+
+      res.status(200).json({
+        message: "La contraseña se actualizado correctamente",
+      });
+    } catch (error) {
+      //console.error(error);
+      res.status(500).json({ error: "Error al confirmar la cuenta" });
+    }
+  };
 }

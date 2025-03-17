@@ -5,6 +5,8 @@ import { handleInputErrors } from "../middleware/handleInputErrors";
 import { validateTokenInput } from "../middleware/validateTokenInput";
 import { validateLoginInput } from "../middleware/validateLoginInput";
 import { validateRequestToken } from "../middleware/validateRequestToken";
+import { validateUpdatePasswordInput } from "../middleware/validateUpdatePasswordInput";
+import { validateToken } from "../middleware/validateId";
 
 const router = Router();
 
@@ -34,6 +36,28 @@ router.post(
   validateRequestToken,
   handleInputErrors,
   AuthController.requestConfirmationCode
+);
+
+router.post(
+  "/forgot-password",
+  validateRequestToken,
+  handleInputErrors,
+  AuthController.forgotPassword
+);
+
+router.post(
+  "/validate-token",
+  validateTokenInput,
+  handleInputErrors,
+  AuthController.validateToken
+);
+
+router.post(
+  "/update-password/:token",
+  validateToken,
+  validateUpdatePasswordInput,
+  handleInputErrors,
+  AuthController.updatePasswordWithToken
 );
 
 export default router;

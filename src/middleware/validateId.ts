@@ -32,3 +32,19 @@ export const validateTaskId = async (
 
   next();
 };
+
+export const validateToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  await param("token").isNumeric().withMessage("Token no válido").run(req);
+
+  let errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(400).json({ errors: errors.array() });
+    return;
+  }
+
+  next();
+};

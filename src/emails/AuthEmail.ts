@@ -22,4 +22,20 @@ export class AuthEmail {
 
     console.log("Mensaje Enviado", info.messageId);
   };
+
+  static sendPasswordResetToken = async (user: EmailType) => {
+    const info = await transporter.sendMail({
+      from: "TaskFlow <admin@taskflow.com>",
+      to: user.email,
+      subject: "TaskFlow - Reestablece tu contraseña",
+      html: `<p>Hola: ${user.name}, has solicitado reestablecer tu contraseña</p>
+          <p>Para reestablecer tu contraseña, haz click en el siguiente enlace:</p>
+          <a href="${process.env.FRONTEND_URL}/auth/new-password">Reestablecer contraseña</a>
+          <p>Ingresa el siguiente código: <b>${user.token}</b></p>
+          <p>Es código expira en 10 minutos</p>
+          `,
+    });
+
+    console.log("Mensaje Enviado", info.messageId);
+  };
 }
