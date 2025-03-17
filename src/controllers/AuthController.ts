@@ -111,10 +111,53 @@ export class AuthController {
         return;
       }
 
-      res.status(200).send("Autenticado.....");
+      res.status(200).json({ message: "Autenticado..." });
     } catch (error) {
       //console.error(error);
       res.status(500).json({ error: "Error al iniciar sesión" });
+    }
+  };
+
+  static requestConfirmationCode = async (req: Request, res: Response) => {
+    try {
+      const { email } = req.body;
+
+      // check if user already exists
+      const user = await User.findOne({ email });
+      if (!user) {
+        const error = new Error(`El usuario no esta registrado.`);
+        res.status(409).json({ error: error.message });
+        return;
+      }
+
+      if (user.confirmed) {
+        const error = new Error(
+          "La cuenta ya está confirmada. No necesitas volver a solicitar un código de confirmación."
+        );
+        res.status(409).json({ error: error.message });
+        return;
+      }
+
+      //Generate token
+      const token = new Token();
+      token.token = generateToken();
+      token.user = user.id;
+
+      //send email
+      AuthEmail.sendConfirmationEmail({
+        name: user.name,
+        email: user.email,
+        token: token.token,
+      });
+
+      await Promise.allSettled([user.save(), token.save()]);
+
+      res.status(201).json({
+        message: "Se ha enviado un nuevo token a tu correo electrónico",
+      });
+    } catch (error) {
+      //console.error(error);
+      res.status(500).json({ error: "Error al crear la cuenta" });
     }
   };
 }

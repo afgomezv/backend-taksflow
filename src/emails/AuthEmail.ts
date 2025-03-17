@@ -14,7 +14,7 @@ export class AuthEmail {
       subject: "TaskFlow - Confirmar tu cuenta",
       html: `<p>Hola: ${user.name}, has creado tu cuenta en TaskFlow, ya casi esta lista, solo debes confirmar tu cuenta</p>
           <p>Para confirmar tu cuenta, haz click en el siguiente enlace:</p>
-          <a href="">Confirma cuenta</a>
+          <a href="${process.env.FRONTEND_URL}/auth/confirm-account">Confirma cuenta</a>
           <p>Ingresa el siguiente código: <b>${user.token}</b></p>
           <p>Es código expira en 10 minutos</p>
           `,
