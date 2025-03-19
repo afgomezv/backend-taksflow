@@ -8,6 +8,7 @@ import { projectExists } from "../middleware/project";
 import { validateTaskInput } from "../middleware/validateTaskInput";
 import { validateTaskStatus } from "../middleware/validateTaskStatus";
 import { taskBelongsToProject, taskExists } from "../middleware/task";
+import { authenticate } from "../middleware/auth";
 
 const router = Router();
 
@@ -21,6 +22,7 @@ router.param("taskId", taskBelongsToProject);
 /**Routes for project **/
 router.post(
   "/",
+  authenticate,
   validateProjectInput,
   handleInputErrors,
   ProjectController.createProject

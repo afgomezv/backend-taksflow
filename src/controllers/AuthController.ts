@@ -2,8 +2,9 @@ import type { Request, Response } from "express";
 import User from "../model/User";
 import Token from "../model/Token";
 import { checkPassword, hashPassoword } from "../utils/auth";
-import { generateToken } from "../utils/token";
 import { AuthEmail } from "../emails/AuthEmail";
+import { generateJWT } from "../utils/jwt";
+import { generateToken } from "../utils/token";
 
 export class AuthController {
   static createAccount = async (req: Request, res: Response) => {
@@ -111,7 +112,8 @@ export class AuthController {
         return;
       }
 
-      res.status(200).json({ message: "Autenticado..." });
+      const token = generateJWT({ id: user.id });
+      res.status(200).json({ token });
     } catch (error) {
       //console.error(error);
       res.status(500).json({ error: "Error al iniciar sesión" });
