@@ -7,6 +7,7 @@ import { validateLoginInput } from "../middleware/validateLoginInput";
 import { validateRequestToken } from "../middleware/validateRequestToken";
 import { validateUpdatePasswordInput } from "../middleware/validateUpdatePasswordInput";
 import { validateToken } from "../middleware/validateId";
+import { authenticate } from "../middleware/auth";
 
 const router = Router();
 
@@ -59,5 +60,7 @@ router.post(
   handleInputErrors,
   AuthController.updatePasswordWithToken
 );
+
+router.get("/user", authenticate, AuthController.user);
 
 export default router;

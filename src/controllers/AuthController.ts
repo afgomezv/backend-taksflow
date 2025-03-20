@@ -243,4 +243,8 @@ export class AuthController {
       res.status(500).json({ error: "Error al confirmar la cuenta" });
     }
   };
+
+  static user = async (req: Request, res: Response) => {
+    res.json(req.user);
+  };
 }
