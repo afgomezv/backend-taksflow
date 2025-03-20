@@ -4,7 +4,7 @@ import { handleInputErrors } from "../middleware/handleInputErrors";
 import { validateProjectId, validateTaskId } from "../middleware/validateId";
 import { validateProjectInput } from "../middleware/validateProjectInput";
 import { TaskController } from "../controllers/TaskController";
-import { projectExists } from "../middleware/project";
+import { projectBelongsToUser, projectExists } from "../middleware/project";
 import { validateTaskInput } from "../middleware/validateTaskInput";
 import { validateTaskStatus } from "../middleware/validateTaskStatus";
 import { taskBelongsToProject, taskExists } from "../middleware/task";
@@ -12,8 +12,11 @@ import { authenticate } from "../middleware/auth";
 
 const router = Router();
 
+router.use(authenticate);
+
 router.param("projectId", validateProjectId);
 router.param("projectId", projectExists);
+router.param("projectId", projectBelongsToUser);
 
 router.param("taskId", validateTaskId);
 router.param("taskId", taskExists);
@@ -22,7 +25,6 @@ router.param("taskId", taskBelongsToProject);
 /**Routes for project **/
 router.post(
   "/",
-  authenticate,
   validateProjectInput,
   handleInputErrors,
   ProjectController.createProject

@@ -30,3 +30,17 @@ export async function projectExists(
     res.status(500).json({ error: "Error inesperado" });
   }
 }
+
+export async function projectBelongsToUser(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  if (req.project.manager.toString() !== req.user.id.toString()) {
+    const error = new Error("No tienes permisos sobre este proyecto");
+    res.status(403).json({ error: error.message });
+    return;
+  }
+
+  next();
+}

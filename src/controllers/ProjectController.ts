@@ -5,6 +5,9 @@ export class ProjectController {
   static createProject = async (req: Request, res: Response) => {
     const project = new Project(req.body);
 
+    //Asignar un manager
+    project.manager = req.user.id;
+
     try {
       await project.save();
       res.status(201).json({ message: "Proyecto creado correctamente" });
@@ -16,7 +19,9 @@ export class ProjectController {
 
   static getAllProjects = async (req: Request, res: Response) => {
     try {
-      const projects = await Project.find({});
+      const projects = await Project.find({
+        $or: [{ manager: { $in: req.user.id } }],
+      });
       res.status(200).json(projects);
     } catch (error) {
       //console.log(error);
@@ -34,6 +39,7 @@ export class ProjectController {
         res.status(404).json({ error: error.message });
         return;
       }
+
       res.status(200).json(project);
     } catch (error) {
       //console.log(error);
