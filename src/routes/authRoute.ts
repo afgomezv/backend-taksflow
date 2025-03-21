@@ -2,9 +2,9 @@ import { Router } from "express";
 import { AuthController } from "../controllers/AuthController";
 import { validateUserInput } from "../middleware/validateUserInput";
 import { handleInputErrors } from "../middleware/handleInputErrors";
+import { validateEmailInput } from "../middleware/validateEmailInput";
 import { validateTokenInput } from "../middleware/validateTokenInput";
 import { validateLoginInput } from "../middleware/validateLoginInput";
-import { validateRequestToken } from "../middleware/validateRequestToken";
 import { validateUpdatePasswordInput } from "../middleware/validateUpdatePasswordInput";
 import { validateToken } from "../middleware/validateId";
 import { authenticate } from "../middleware/auth";
@@ -34,14 +34,14 @@ router.post(
 
 router.post(
   "/request-token",
-  validateRequestToken,
+  validateEmailInput,
   handleInputErrors,
   AuthController.requestConfirmationCode
 );
 
 router.post(
   "/forgot-password",
-  validateRequestToken,
+  validateEmailInput,
   handleInputErrors,
   AuthController.forgotPassword
 );

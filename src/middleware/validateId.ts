@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { param, validationResult } from "express-validator";
+import { body, param, validationResult } from "express-validator";
 
 export const validateProjectId = async (
   req: Request,
@@ -39,6 +39,22 @@ export const validateToken = async (
   next: NextFunction
 ) => {
   await param("token").isNumeric().withMessage("Token no válido").run(req);
+
+  let errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(400).json({ errors: errors.array() });
+    return;
+  }
+
+  next();
+};
+
+export const validateUserId = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  await body("id").isMongoId().withMessage("ID de usuario no valido").run(req);
 
   let errors = validationResult(req);
   if (!errors.isEmpty()) {
