@@ -64,3 +64,22 @@ export const validateUserId = async (
 
   next();
 };
+
+export const validateUserIdParam = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  await param("userId")
+    .isMongoId()
+    .withMessage("ID de usuario no valido")
+    .run(req);
+
+  let errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(400).json({ errors: errors.array() });
+    return;
+  }
+
+  next();
+};

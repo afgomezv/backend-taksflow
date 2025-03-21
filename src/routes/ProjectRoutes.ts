@@ -5,6 +5,7 @@ import {
   validateProjectId,
   validateTaskId,
   validateUserId,
+  validateUserIdParam,
 } from "../middleware/validateId";
 import { validateProjectInput } from "../middleware/validateProjectInput";
 import { TaskController } from "../controllers/TaskController";
@@ -79,8 +80,8 @@ router.post(
 router.get("/:projectId/team", TeamController.getProjectTeam);
 router.post("/:projectId/team", validateUserId, TeamController.addMemberById);
 router.delete(
-  "/:projectId/team",
-  validateUserId,
+  "/:projectId/team/:userId",
+  validateUserIdParam,
   TeamController.removeMemberById
 );
 
