@@ -12,7 +12,11 @@ import { TaskController } from "../controllers/TaskController";
 import { projectBelongsToUser, projectExists } from "../middleware/project";
 import { validateTaskInput } from "../middleware/validateTaskInput";
 import { validateTaskStatus } from "../middleware/validateTaskStatus";
-import { taskBelongsToProject, taskExists } from "../middleware/task";
+import {
+  hasAutorization,
+  taskBelongsToProject,
+  taskExists,
+} from "../middleware/task";
 import { authenticate } from "../middleware/auth";
 import { validateEmailInput } from "../middleware/validateEmailInput";
 import { TeamController } from "../controllers/TeamController";
@@ -49,6 +53,7 @@ router.delete("/:projectId", ProjectController.deleteProject);
 /**Routes for task **/
 router.post(
   "/:projectId/tasks",
+  hasAutorization,
   validateTaskInput,
   handleInputErrors,
   TaskController.createTask
@@ -57,11 +62,16 @@ router.get("/:projectId/tasks", TaskController.getProjectTasks);
 router.get("/:projectId/tasks/:taskId", TaskController.getTaskById);
 router.put(
   "/:projectId/tasks/:taskId",
+  hasAutorization,
   validateTaskInput,
   handleInputErrors,
   TaskController.updateTask
 );
-router.delete("/:projectId/tasks/:taskId", TaskController.deleteTask);
+router.delete(
+  "/:projectId/tasks/:taskId",
+  hasAutorization,
+  TaskController.deleteTask
+);
 router.post(
   "/:projectId/tasks/:taskId/status",
   validateTaskStatus,

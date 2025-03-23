@@ -36,7 +36,10 @@ export async function projectBelongsToUser(
   res: Response,
   next: NextFunction
 ) {
-  if (req.project.manager.toString() !== req.user.id.toString()) {
+  if (
+    req.project.manager.toString() !== req.user.id.toString() &&
+    !req.project.team.includes(req.user.id)
+  ) {
     const error = new Error("No tienes permisos sobre este proyecto");
     res.status(403).json({ error: error.message });
     return;
