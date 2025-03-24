@@ -33,6 +33,22 @@ export const validateTaskId = async (
   next();
 };
 
+export const validateNoteId = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  await param("noteId").isMongoId().withMessage("ID no válido").run(req);
+
+  let errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(400).json({ errors: errors.array() });
+    return;
+  }
+
+  next();
+};
+
 export const validateToken = async (
   req: Request,
   res: Response,

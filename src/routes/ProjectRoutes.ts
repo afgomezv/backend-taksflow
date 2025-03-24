@@ -2,6 +2,7 @@ import { Router } from "express";
 import { ProjectController } from "../controllers/ProjectController";
 import { handleInputErrors } from "../middleware/handleInputErrors";
 import {
+  validateNoteId,
   validateProjectId,
   validateTaskId,
   validateUserId,
@@ -20,6 +21,8 @@ import {
 import { authenticate } from "../middleware/auth";
 import { validateEmailInput } from "../middleware/validateEmailInput";
 import { TeamController } from "../controllers/TeamController";
+import { NoteController } from "../controllers/NoteController";
+import { validateNoteInput } from "../middleware/validateNoteInput";
 
 const router = Router();
 
@@ -93,6 +96,21 @@ router.delete(
   "/:projectId/team/:userId",
   validateUserIdParam,
   TeamController.removeMemberById
+);
+
+/** Routes for Notes */
+router.post(
+  "/:projectId/tasks/:taskId/notes",
+  validateNoteInput,
+  handleInputErrors,
+  NoteController.createNote
+);
+
+router.get("/:projectId/tasks/:taskId/notes", NoteController.getTaskNote);
+router.delete(
+  "/:projectId/tasks/:taskId/notes/:noteId",
+  validateNoteId,
+  NoteController.deleteNote
 );
 
 export default router;
