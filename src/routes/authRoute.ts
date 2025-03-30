@@ -8,6 +8,8 @@ import { validateLoginInput } from "../middleware/validateLoginInput";
 import { validateUpdatePasswordInput } from "../middleware/validateUpdatePasswordInput";
 import { validateToken } from "../middleware/validateId";
 import { authenticate } from "../middleware/auth";
+import { validateProfileInput } from "../middleware/validateProfileInput";
+import { validateChangePasswordInput } from "../middleware/validateChanegePasswordInput";
 
 const router = Router();
 
@@ -62,5 +64,23 @@ router.post(
 );
 
 router.get("/user", authenticate, AuthController.user);
+
+/** Profile **/
+
+router.post(
+  "/profile",
+  authenticate,
+  validateProfileInput,
+  handleInputErrors,
+  AuthController.updateProfile
+);
+
+router.post(
+  "/update-password",
+  authenticate,
+  validateChangePasswordInput,
+  handleInputErrors,
+  AuthController.updateCurrentUserPassword
+);
 
 export default router;

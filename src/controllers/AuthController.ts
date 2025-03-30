@@ -247,4 +247,57 @@ export class AuthController {
   static user = async (req: Request, res: Response) => {
     res.json(req.user);
   };
+
+  static updateProfile = async (req: Request, res: Response) => {
+    const { name, email } = req.body;
+
+    const userExists = await User.findOne({ email });
+
+    if (userExists && userExists.id.toString() !== req.user.id.toString()) {
+      const error = new Error("El correo electrónico ya está en uso.");
+      res.status(409).json({ error: error.message });
+      return;
+    }
+
+    req.user.name = name;
+    req.user.email = email;
+    try {
+      await req.user.save();
+      res.status(200).json({
+        message: "El usuario se ha actualizado correctamente",
+      });
+    } catch (error) {
+      //console.error(error);
+      res.status(500).json({ error: "Error al actualizar el usuario" });
+    }
+  };
+
+  static updateCurrentUserPassword = async (req: Request, res: Response) => {
+    const { current_password, password } = req.body;
+
+    try {
+      const user = await User.findById(req.user.id);
+
+      const isPasswordCorrect = await checkPassword(
+        current_password,
+        user.password
+      );
+
+      if (!isPasswordCorrect) {
+        const error = new Error("Contraseña actual es incorrecta.");
+        res.status(401).json({ error: error.message });
+        return;
+      }
+
+      user.password = await hashPassoword(password);
+
+      await user.save();
+      res.status(200).json({
+        message: "La contraseña se actualizado correctamente",
+      });
+    } catch (error) {
+      //console.error(error);
+      res.status(500).json({ error: "Error al actualizar la contraseña" });
+    }
+  };
 }
