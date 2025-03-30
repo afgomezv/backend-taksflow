@@ -67,7 +67,7 @@ router.get("/user", authenticate, AuthController.user);
 
 /** Profile **/
 
-router.post(
+router.put(
   "/profile",
   authenticate,
   validateProfileInput,
@@ -75,7 +75,7 @@ router.post(
   AuthController.updateProfile
 );
 
-router.post(
+router.put(
   "/update-password",
   authenticate,
   validateChangePasswordInput,
