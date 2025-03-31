@@ -9,6 +9,7 @@ import { validateUpdatePasswordInput } from "../middleware/validateUpdatePasswor
 import { validateToken } from "../middleware/validateId";
 import { authenticate } from "../middleware/auth";
 import { validateProfileInput } from "../middleware/validateProfileInput";
+import { validateCheckPasswordInput } from "../middleware/validateCheckPasswordInput";
 import { validateChangePasswordInput } from "../middleware/validateChanegePasswordInput";
 
 const router = Router();
@@ -81,6 +82,14 @@ router.put(
   validateChangePasswordInput,
   handleInputErrors,
   AuthController.updateCurrentUserPassword
+);
+
+router.post(
+  "/check-password",
+  authenticate,
+  validateCheckPasswordInput,
+  handleInputErrors,
+  AuthController.checkPassword
 );
 
 export default router;
