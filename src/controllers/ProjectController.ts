@@ -68,7 +68,6 @@ export class ProjectController {
 
   static deleteProject = async (req: Request, res: Response) => {
     try {
-      //TODO: verificar: await Task.deleteMany({ projectId: req.project.id });
       await req.project.deleteOne();
       res.json({ message: "Proyecto eliminado correctamente" });
     } catch (error) {
